@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#165bc7">
+  <title>App-y Hour | Click-a-Topic</title>
+  <style>
+    :root{--ink:#142a3a;--soft:#586d7a;--blue:#165bc7;--blue2:#0a4fae;--border:#dce6ef;--bg:#f5f8fb;--selected:#eef5ff;--shadow:0 16px 44px rgba(29,54,87,.09)}
+    *{box-sizing:border-box}
+    [hidden]{display:none!important}
+    body{margin:0;background:radial-gradient(circle at 85% 10%,#e1edfc 0,transparent 38%),var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+    .shell{max-width:980px;margin:0 auto;padding:32px 20px 55px}
+    header{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:30px}
+    .brand{font-weight:850;font-size:21px;letter-spacing:-.6px;color:var(--blue2)}.brand span{color:#fb7a35}
+    .tag{border:1px solid #cbddec;background:#fff9;padding:5px 12px;border-radius:30px;font-size:12px;font-weight:650;color:#4a6072}
+    .eyebrow{color:#2470b8;letter-spacing:.13em;text-transform:uppercase;font-size:12px;font-weight:800}
+    h1{font-size:clamp(30px,5vw,46px);letter-spacing:-1.5px;line-height:1.12;margin:8px 0 12px}
+    .sub{color:var(--soft);font-size:16px;max-width:760px;margin:0 0 25px}
+    .step{background:#fff;border:1px solid var(--border);box-shadow:var(--shadow);padding:clamp(21px,3.4vw,34px);border-radius:20px;margin-bottom:18px}
+    .step-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:22px}
+    .step-number{flex:none;background:#e7f1ff;color:#1257b9;border-radius:12px;padding:8px 11px;font-size:13px;font-weight:850;letter-spacing:.03em}
+    .step-title{margin:0;font-size:clamp(21px,3vw,27px);letter-spacing:-.5px;line-height:1.2}
+    .step-sub{color:var(--soft);font-size:14px;margin:5px 0 0}
+    button{font:inherit;cursor:pointer;border-radius:11px;border:1px solid #cadbea;padding:11px 17px;font-weight:700;background:#fff;color:var(--ink)}
+    button:hover{border-color:#88b2e3;background:#f6fbff}
+    button:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #9bc6ff;outline-offset:2px}
+    .draw{background:var(--blue);border-color:var(--blue);color:#fff;min-height:92px;padding:21px 40px;font-size:clamp(21px,3vw,26px);font-weight:850;min-width:385px;border-radius:18px;box-shadow:0 10px 24px rgba(22,91,199,.2)}
+    .draw:hover{background:#0848a5;color:#fff}
+    .result{margin-top:25px;border:1px solid #d5e4f1;border-radius:16px;background:linear-gradient(135deg,#f5faff,#fff);padding:24px 26px;animation:appear .25s ease}
+    .challenge-label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#58768e;font-weight:800}
+    .subject{font-size:clamp(27px,4vw,37px);font-weight:850;line-height:1.2;letter-spacing:-.7px;margin:9px 0 7px}
+    .topic{font-size:18px;color:#445c70}.topic strong{color:var(--ink)}
+    .ideas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .idea{position:relative;min-height:155px;text-align:left;display:flex;flex-direction:column;justify-content:space-between;gap:14px;background:white;border:1.5px solid #d4e1ec;padding:17px;border-radius:14px;cursor:pointer;transition:border-color .15s ease,background .15s ease,box-shadow .15s ease}
+    .card-select{position:absolute;inset:0;width:100%;height:100%;z-index:1;border:0;border-radius:14px;background:transparent;padding:0;cursor:pointer}
+    .card-select:hover{background:transparent;border:0}
+    .card-select:focus-visible{outline:3px solid #9bc6ff;outline-offset:3px}
+    .idea-top{display:flex;flex-direction:column;gap:6px}
+    .idea .number{color:#6690b5;font-size:12px;font-weight:800}
+    .idea .name{font-size:17px;line-height:1.25;font-weight:780}
+    .idea-actions{position:relative;z-index:2;display:flex;gap:8px;flex-wrap:wrap;pointer-events:none}
+    .tiny-link{display:inline-flex;align-items:center;justify-content:center;padding:9px 12px;border-radius:10px;border:1px solid #d0ddea;background:#fff;color:#245ea8;text-decoration:none;font-size:13px;font-weight:750;position:relative;z-index:3;pointer-events:auto}
+    .tiny-link:hover{background:#f5faff;border-color:#88b2e3}
+    .idea:hover{border-color:#7da9e4;background:#f7fbff}
+    .idea.active{background:var(--selected);border-color:#2770dd;box-shadow:inset 0 0 0 1px #2770dd}
+    .step-two{animation:appear .28s ease}
+    .foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin:20px 3px;color:#617384;font-size:13px}
+    .link-button{border:none;background:transparent;text-decoration:underline;text-underline-offset:3px;color:#285da8;padding:5px}
+    details{margin-top:20px;background:#fff;border:1px solid var(--border);border-radius:16px;padding:18px 20px}
+    summary{cursor:pointer;font-size:15px;font-weight:750}
+    details p{color:#5d6f7f;font-size:14px}
+    textarea{width:100%;border:1px solid #cddbe8;border-radius:11px;padding:12px 14px;background:#fff;color:var(--ink);min-height:220px;font:13px/1.6 ui-monospace,Consolas,monospace;white-space:pre}
+    .prompt-box{margin-top:24px;border:1px solid #d7e4ef;border-radius:12px;background:#fcfeff;padding:14px}
+    .prompt-box textarea{min-height:100px;font:14px/1.5 ui-monospace,Consolas,monospace}
+    .editor-actions,.prompt-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .small-primary{background:var(--blue);border-color:var(--blue);color:#fff}
+    .small-primary:hover{background:#0848a5;color:#fff}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    .status{font-size:13px;min-height:18px;color:#246b3e;margin-top:8px}
+    @keyframes appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+    @media(max-width:760px){.ideas{grid-template-columns:1fr}.idea{min-height:115px}.shell{padding-top:18px}.draw{width:100%;min-width:0}.step-head{gap:10px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header><div class="brand">App<span>-y</span> Hour</div><div class="tag">3D OBJECTS · PILOT ACTIVITY</div></header>
+    <div class="eyebrow">A two-step creative challenge</div>
+    <h1>What will you create today?</h1>
+    <p class="sub">Discover a random teaching topic, then choose a 3D object and find a reference image to create it.</p>
+
+    <section class="step" aria-labelledby="step1-heading">
+      <div class="step-head">
+        <span class="step-number">STEP 1</span>
+        <div><h2 class="step-title" id="step1-heading">Discover your topic</h2><p class="step-sub">Click the button to reveal a random teaching challenge.</p></div>
+      </div>
+      <button class="draw" id="generate" type="button">🎲 &nbsp;Click-a-Topic</button>
+      <div class="result" id="topic-result" hidden aria-live="polite">
+        <div class="challenge-label">Your teaching challenge</div>
+        <div id="subject" class="subject"></div>
+        <div id="topic" class="topic"></div>
+      </div>
+    </section>
+
+    <section class="step step-two" id="step2" aria-labelledby="step2-heading" hidden>
+      <div class="step-head">
+        <span class="step-number">STEP 2</span>
+        <div><h2 class="step-title" id="step2-heading">Choose one 3D object</h2><p class="step-sub">Pick an object, then use Google Images to find a reference picture.</p></div>
+      </div>
+      <div id="ideas" class="ideas"></div>
+      <details class="prompt-box" id="prompt-box">
+        <summary>Optional: object prompt</summary>
+        <p>If you would also like to try text-to-3D, select an object to get a suggested prompt.</p>
+        <textarea id="prompt-output" readonly aria-label="Object prompt output"></textarea>
+        <div class="prompt-actions"><button id="copy" type="button" disabled>Copy object prompt</button></div>
+      </details>
+    </section>
+
+    <div class="foot"><span id="remaining">Ready for your first topic</span><button class="link-button" id="reset-history" type="button">Reset randomisation history</button></div>
+    <details>
+      <summary>Edit the challenge bank (optional)</summary>
+      <p>Each line is one challenge: <strong>Subject | Topic | Object 1 | Object 2 | Object 3</strong>. You can change or add entries for CJ's workshop. Changes are saved in this browser only.</p>
+      <textarea id="bank" spellcheck="false" aria-label="Challenge bank editor"></textarea>
+      <div class="editor-actions"><button class="small-primary" id="save-bank" type="button">Save challenge bank</button><button id="restore-bank" type="button">Restore original examples</button></div>
+      <div class="status" id="status" role="status"></div>
+    </details>
+  </main>
+<script>
+(function(){
+  'use strict';
+  const original = `Biology | Human anatomy | Human heart | Human skull | Vertebral column
+Biology | Plant structures | Flower | Leaf | Tree root system
+Chemistry | Molecular structures | Water molecule | Methane molecule | Benzene ring
+Chemistry | Laboratory equipment | Conical flask | Distillation apparatus | Molecular model kit
+Physics | Forces and motion | Pulley system | Pendulum | Inclined plane
+Physics | Electricity and magnetism | Horseshoe magnet | Simple electric motor | Electric circuit board
+Mechanical Engineering | Mechanical systems | Gear assembly | Piston | Wind turbine gearbox
+Mechanical Engineering | Transportation design | Formula racing car | Propeller | Bicycle crankset
+Civil Engineering | Structural systems | Truss bridge | Suspension bridge | Arch bridge
+Civil Engineering | Urban infrastructure | Water tower | Drainage pipe junction | Road barrier
+Computer Science | Computer hardware | CPU chip | Computer mouse | Server rack
+Computer Science | Networks and communication | Wi-Fi router | Network switch | Satellite dish
+Environmental Science | Renewable energy | Wind turbine | Solar panel array | Hydroelectric dam
+Environmental Science | Ecosystems | Coral reef | Mangrove tree | Rainwater collection tank
+Architecture and Design | Architectural forms | Dome | Spiral staircase | Pavilion
+Architecture and Design | Product design | Desk lamp | Reusable water bottle | Ergonomic chair
+Business and Management | Supply chain and logistics | Shipping container | Forklift | Cargo ship
+Business and Management | Retail and service design | Shopping kiosk | Vending machine | Supermarket checkout
+History and Humanities | Ancient technologies | Roman aqueduct | Ancient pottery vessel | Waterwheel
+History and Humanities | Cultural heritage | Traditional lantern | Bronze ceremonial vessel | Pagoda
+Medicine | Medical instruments | Stethoscope | Otoscope | Syringe
+Medicine | Clinical teaching models | Knee joint | Human tooth | Human ear
+Earth Science | Geological formations | Volcano | Rock strata | Canyon
+Earth Science | Weather and climate | Weather balloon | Rain gauge | Tornado model`;
+  const $ = id => document.getElementById(id);
+  function parse(text){
+    const lines=text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+    const entries=lines.map((line,i)=>{
+      const fields=line.split('|').map(s=>s.trim());
+      if(fields.length!==5 || fields.some(x=>!x)) throw new Error('Line '+(i+1)+' needs 5 filled fields separated by |.');
+      return {subject:fields[0],topic:fields[1],objects:fields.slice(2)};
+    });
+    if(!entries.length) throw new Error('Add at least one challenge.');
+    return entries;
+  }
+  function readSavedBank(){
+    try{return localStorage.getItem('appy_hour_challenge_bank')||original}catch(e){return original}
+  }
+  let bankText=readSavedBank();
+  let challenges;
+  try{challenges=parse(bankText)}catch(e){bankText=original;challenges=parse(original)}
+  let used=new Set(),current=null,selected=null;
+  function googleImagesUrl(query){
+    return 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(query);
+  }
+  function selectedObject(){return selected===null||!current?null:current.objects[selected]}
+  function buildPrompt(){
+    const obj=selectedObject();
+    if(!obj) return 'Select one of the three objects above to see a suggested prompt.';
+    return `Create a single, clearly recognisable 3D model of a ${obj.toLowerCase()} for a teaching activity about ${current.topic.toLowerCase()} (${current.subject}). Use clean, simple geometry and an isolated object without a background.`;
+  }
+  function updatePromptBox(){
+    $('prompt-output').value=buildPrompt();
+    $('copy').disabled=selected===null;
+  }
+  function render(){
+    $('topic-result').hidden=false;
+    $('step2').hidden=false;
+    $('subject').textContent=current.subject;
+    $('topic').textContent='';
+    const strong=document.createElement('strong');
+    strong.textContent='Topic: ';
+    $('topic').appendChild(strong);
+    $('topic').appendChild(document.createTextNode(current.topic));
+    $('ideas').textContent='';
+    current.objects.forEach((idea,i)=>{
+      const card=document.createElement('div');
+      card.className='idea'+(i===selected?' active':'');
+      const cardSelect=document.createElement('button');
+      cardSelect.type='button';
+      cardSelect.className='card-select';
+      cardSelect.setAttribute('aria-pressed',String(i===selected));
+      cardSelect.setAttribute('aria-label',`Select ${idea} as the 3D object`);
+      cardSelect.addEventListener('click',()=>{
+        selected=i;
+        render();
+        $('ideas').children[i].querySelector('.card-select').focus();
+      });
+      const top=document.createElement('div');top.className='idea-top';
+      const n=document.createElement('span');n.className='number';n.textContent='OPTION '+(i+1);
+      const t=document.createElement('span');t.className='name';t.textContent=idea;
+      top.append(n,t);
+      const actions=document.createElement('div');actions.className='idea-actions';
+      const imageLink=document.createElement('a');
+      imageLink.className='tiny-link';
+      imageLink.target='_blank';
+      imageLink.rel='noopener noreferrer';
+      imageLink.textContent='Google Images';
+      imageLink.href=googleImagesUrl(`${idea} ${current.topic}`);
+      imageLink.setAttribute('aria-label',`Find reference images for ${idea} on Google Images (opens new tab)`);
+      actions.append(imageLink);
+      card.append(top,cardSelect,actions);
+      $('ideas').appendChild(card);
+    });
+    $('remaining').textContent=(challenges.length-used.size)+' topics remaining before repeat';
+    updatePromptBox();
+  }
+  function pick(){
+    let remaining=challenges.map((_,i)=>i).filter(i=>!used.has(i));
+    if(!remaining.length){used.clear();remaining=challenges.map((_,i)=>i)}
+    const i=remaining[Math.floor(Math.random()*remaining.length)];
+    used.add(i);
+    current=challenges[i];
+    selected=null;
+    $('prompt-box').open=false;
+    render();
+  }
+  function initialise(){
+    current=null;
+    selected=null;
+    $('topic-result').hidden=true;
+    $('step2').hidden=true;
+    $('subject').textContent='';
+    $('topic').textContent='';
+    $('remaining').textContent=challenges.length+' topics available';
+    $('bank').value=bankText;
+  }
+  $('generate').addEventListener('click',pick);
+  $('reset-history').addEventListener('click',()=>{
+    used.clear();
+    $('remaining').textContent='Randomisation history reset';
+  });
+  $('save-bank').addEventListener('click',()=>{
+    try{
+      const entries=parse($('bank').value);
+      bankText=$('bank').value.trim();
+      let saved=true;
+      try{localStorage.setItem('appy_hour_challenge_bank',bankText)}catch(e){saved=false}
+      challenges=entries;used.clear();initialise();
+      $('status').textContent=saved?'Challenge bank saved successfully.':'Challenge bank updated for this session; local browser storage is unavailable.';
+    }catch(err){$('status').textContent=err.message}
+  });
+  $('restore-bank').addEventListener('click',()=>{
+    try{localStorage.removeItem('appy_hour_challenge_bank')}catch(e){}
+    bankText=original;challenges=parse(original);used.clear();initialise();
+    $('status').textContent='Original examples restored.';
+  });
+  $('copy').addEventListener('click',async()=>{
+    if(selected===null)return;
+    const prompt=buildPrompt();
+    try{await navigator.clipboard.writeText(prompt);$('copy').textContent='Copied!'}
+    catch(e){
+      const ta=document.createElement('textarea');ta.value=prompt;document.body.appendChild(ta);ta.select();
+      try{document.execCommand('copy');$('copy').textContent='Copied!'}
+      catch(e2){$('copy').textContent='Copy unavailable in this browser'}
+      ta.remove();
+    }
+    setTimeout(()=>$('copy').textContent='Copy object prompt',1800);
+  });
+  initialise();
+})();
+</script>
+</body>
+</html>
